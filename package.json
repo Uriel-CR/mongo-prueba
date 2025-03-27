@@ -12,12 +12,8 @@
   "devDependencies": {
     "@types/jest": "^29.5.3",
     "jest": "^29.6.1", 
-    "mongodb-memory-server": "^8.13.0",
-    "supertest": "^6.3.3"
-  },
-  "scripts": {
-    "test": "jest --coverage",
-    "test:ci": "jest --ci --reporters=default --reporters=jest-junit"
+    "mongodb-memory-server": "^8.16.1",
+    "supertest": "^6.3.4"
   },
   "jest": {
     "testEnvironment": "node",
