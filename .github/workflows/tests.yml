@@ -1,20 +1,57 @@
 name: MongoDB Tests
 
-on: [push, pull_request]
+# Eventos que disparan el workflow
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
 
 jobs:
   test:
+    # Usar la última versión de Ubuntu
     runs-on: ubuntu-latest
-    
+
+    # Servicios adicionales como MongoDB
+    services:
+      mongodb:
+        image: mongo:latest
+        ports:
+          - 27017:27017
+
+    # Pasos del workflow
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js
+    # Preparar el entorno
+    - name: Checkout código
+      uses: actions/checkout@v3
+
+    # Configurar Node.js
+    - name: Usar Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '16.x'
-    
-    - name: Install Dependencies
+        node-version: '18.x'
+
+    # Cachear dependencias de npm para acelerar builds
+    - name: Cachear dependencias de npm
+      uses: actions/cache@v3
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+
+    # Instalar dependencias
+    - name: Instalar dependencias
       run: npm ci
-    
-    - name: Run Tests
+
+    # Ejecutar pruebas con cobertura
+    - name: Ejecutar pruebas
       run: npm test
+
+    # Subir informe de cobertura (opcional)
+    - name: Subir cobertura a Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        flags: unittests
+        fail_ci_if_error: true
