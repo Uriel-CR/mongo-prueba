@@ -25,23 +25,17 @@ jobs:
       with:
         node-version: '18.x'
 
-    # Instalar dependencias del sistema necesarias
-    - name: Instalar dependencias del sistema
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y libssl1.1 libcrypto++6
-        sudo apt-get install -y libc++-dev libc++abi-dev
+    - name: Limpiar caché de npm
+      run: npm cache clean --force
 
-    - name: Instalar dependencias de Node.js
+    # Cambio importante: usar npm install en lugar de npm ci
+    - name: Instalar dependencias
       run: |
-        npm cache clean --force
         rm -rf node_modules
         rm -f package-lock.json
         npm install
 
-    # Configurar variable de entorno para pruebas
     - name: Ejecutar pruebas
       run: npm test
       env:
         CI: true
-        NODE_OPTIONS: --max_old_space_size=4096
